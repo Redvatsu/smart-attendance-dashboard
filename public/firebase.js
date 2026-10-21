@@ -1,5 +1,9 @@
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import {
+  initializeApp,
+  getApps,
+  getApp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
   getFirestore,
@@ -7,7 +11,7 @@ import {
   getDocs
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-// Replace these placeholders with your Firebase web app configuration.
+// Firebase Web App configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBazEGNdZt9dRq9norwjdNUwPQ5JOquFY0",
   authDomain: "smart-attendance-system-96252.firebaseapp.com",
@@ -17,7 +21,10 @@ const firebaseConfig = {
   appId: "1:463352249748:web:33e56b01499f558d0b6381"
 };
 
-const app = initializeApp(firebaseConfig);
+// Avoid initializing the app more than once.
+const app = getApps().length
+  ? getApp()
+  : initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
 
@@ -25,43 +32,53 @@ export const db = getFirestore(app);
  * Retrieve students and attendance from Cloud Firestore.
  */
 export async function getDashboardData() {
-  const [studentsSnapshot, attendanceSnapshot] = await Promise.all([
-    getDocs(collection(db, "students")),
-    getDocs(collection(db, "attendance"))
-  ]);
+  try {
+    const [studentsSnapshot, attendanceSnapshot] = await Promise.all([
+      getDocs(collection(db, "students")),
+      getDocs(collection(db, "attendance"))
+    ]);
 
-  const students = studentsSnapshot.docs.map((doc) => {
-    const data = doc.data();
+    const students = studentsSnapshot.docs.map((document) => {
+      const data = document.data();
 
-    return {
-      id: String(data.studentId ?? doc.id),
-      name: data.name ?? "Unknown student",
-      uid: data.rfidUid ?? ""
-    };
-  });
+      return {
+        id: String(data.studentId ?? document.id),
+        name: data.name ?? "Unknown student",
+        uid: data.rfidUid ?? ""
+      };
+    });
 
-  const studentsById = new Map(
-    students.map((student) => [student.id, student])
-  );
+    const studentsById = new Map(
+      students.map((student) => [student.id, student])
+    );
 
-  const attendance = attendanceSnapshot.docs.map((doc) => {
-    const data = doc.data();
+    const attendance = attendanceSnapshot.docs.map((document) => {
+      const data = document.data();
 
-    const studentId = String(data.studentId ?? "");
-    const student = studentsById.get(studentId);
+      const studentId = String(data.studentId ?? "");
+      const student = studentsById.get(studentId);
 
-    return {
-      eventId: doc.id,
-      studentId,
-      studentName:
-        data.studentName ?? student?.name ?? "Unknown student",
-      uid: data.rfidUid ?? data.uid ?? student?.uid ?? "",
-      date: data.attendanceDate ?? data.date ?? "",
-      time: data.attendanceTime ?? data.time ?? "",
-      status: String(data.status ?? "PRESENT").toUpperCase()
-    };
-  });
+      return {
+        eventId: document.id,
+        studentId,
+        studentName:
+          data.studentName ?? student?.name ?? "Unknown student",
+        uid: data.rfidUid ?? data.uid ?? student?.uid ?? "",
+        date: data.attendanceDate ?? data.date ?? "",
+        time: data.attendanceTime ?? data.time ?? "",
+        status: String(data.status ?? "PRESENT").toUpperCase()
+      };
+    });
 
-  return { students, attendance };
+    console.info("AttendX: Firestore data loaded", {
+      studentCount: students.length,
+      attendanceCount: attendance.length
+    });
+
+    return { students, attendance };
+  } catch (error) {
+    console.error("AttendX: Failed to load Firestore data", error);
+    throw error;
+  }
 }
 
