@@ -43,15 +43,17 @@ function todayISO() {
 function prettyDate(iso) {
   if (!iso) return "—";
 
-  const date = new Date(`${iso}T12:00:00`);
+  const date = new Date(iso + "T12:00:00");
 
-  return Number.isNaN(date.getTime())
-    ? iso
-    : date.toLocaleDateString(undefined, {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-      });
+  if (Number.isNaN(date.getTime())) {
+    return iso;
+  }
+
+  return date.toLocaleDateString(undefined, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
 }
 
 function initials(name) {
