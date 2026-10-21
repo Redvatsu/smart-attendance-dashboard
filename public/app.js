@@ -1,5 +1,4 @@
-```javascript
-/*
+
  * AttendX dashboard frontend.
  * Data source: Firebase Cloud Firestore.
  *
@@ -401,4 +400,4 @@ document.addEventListener("DOMContentLoaded", () => {
   renderAll();
   loadDashboard({ quiet: true });
 });
-```
+
