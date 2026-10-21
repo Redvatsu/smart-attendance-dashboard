@@ -1,4 +1,4 @@
-
+/*
  * AttendX dashboard frontend.
  * Data source: Firebase Cloud Firestore.
  *
