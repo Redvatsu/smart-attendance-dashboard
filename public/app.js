@@ -64,19 +64,23 @@ return String(name || "?")
 .toUpperCase();
 }
 
+
 function escapeHTML(value) {
-return String(value ?? "").replace(
-/[&<>"']/g,
-(character) =>
-({
-"&": "&",
-"<": "<",
-">": ">",
-'"': """,
-"'": "'"
-})[character]
-);
+  const replacements = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  };
+
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    (character) => replacements[character]
+  );
 }
+
+
 
 function setToast(message) {
 const toast = $("#toast");
