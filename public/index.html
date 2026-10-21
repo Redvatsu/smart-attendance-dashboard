@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -6,129 +7,304 @@
   <meta name="theme-color" content="#101827">
   <title>AttendX — Smart Attendance</title>
   <link rel="stylesheet" href="/style.css">
-  <script type="module" src="app.js"></script>
+  <script type="module" src="/app.js"></script>
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
-      <a class="brand" href="#" aria-label="AttendX home">
+      <a class="brand" href="#overview" aria-label="AttendX home">
         <span class="brand-mark">A</span>
-        <span>Attend<span class="brand-light">X</span><small>SMART ATTENDANCE</small></span>
+        <span>Attend<span class="brand-light">X</span>
+          <small>SMART ATTENDANCE</small>
+        </span>
       </a>
-      <div class="nav-label">WORKSPACE</div>
-      <nav class="nav">
-        <a class="nav-item active" href="#overview"><span class="nav-icon">▦</span> Overview</a>
-        <a class="nav-item" href="#attendance"><span class="nav-icon">◷</span> Attendance</a>
-        <a class="nav-item" href="#students"><span class="nav-icon">♙</span> Students</a>
-      </nav>
-      <div class="sidebar-bottom">
-        <div class="device-card">
-          <span class="status-dot"></span>
-          <div><strong>ESP32 device</strong><small id="device-status">Waiting for API</small></div>
-        </div>
-        <div class="sidebar-foot">AttendX <span>v1.0</span><br><small>RFID attendance platform</small></div>
+
+```
+  <div class="nav-label">WORKSPACE</div>
+  <nav class="nav">
+    <a class="nav-item active" href="#overview">
+      <span class="nav-icon">▦</span> Overview
+    </a>
+    <a class="nav-item" href="#attendance">
+      <span class="nav-icon">◷</span> Attendance
+    </a>
+    <a class="nav-item" href="#students">
+      <span class="nav-icon">♙</span> Students
+    </a>
+    <a class="nav-item" href="#monthly-reports">
+      <span class="nav-icon">▤</span> Monthly Reports
+    </a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="device-card">
+      <span class="status-dot"></span>
+      <div>
+        <strong>ESP32 device</strong>
+        <small id="device-status">Waiting for data</small>
       </div>
-    </aside>
-
-    <main class="main">
-      <header class="topbar">
-        <button class="menu-button" id="menu-button" aria-label="Toggle menu">☰</button>
-        <div class="breadcrumb">Workspace <span>/</span> <strong>Overview</strong></div>
-        <div class="top-actions">
-          <span class="live-pill"><i></i> SYSTEM OVERVIEW</span>
-          <div class="avatar">A</div>
-        </div>
-      </header>
-
-      <section class="page-content" id="overview">
-        <div class="page-heading">
-          <div>
-            <p class="eyebrow">ATTENDANCE MANAGEMENT</p>
-            <h1>Good day, <span>Admin.</span></h1>
-            <p class="subtitle">Here's what's happening with your attendance system.</p>
-          </div>
-          <div class="heading-actions">
-            <div class="date-chip"><span>▦</span><span id="today-label">Today</span></div>
-            <button class="button button-primary" id="refresh-button"><span>↻</span> Refresh data</button>
-          </div>
-        </div>
-
-        <div class="notice" id="demo-notice">
-          <span class="notice-icon">i</span>
-          <div><strong>Dashboard preview mode</strong><p>Showing sample records until the Vercel API and database are connected. Sample data is not real attendance.</p></div>
-          <button id="dismiss-notice" aria-label="Dismiss notice">×</button>
-        </div>
-
-        <div class="stats-grid">
-          <article class="stat-card">
-            <div class="stat-top"><span class="stat-label">Registered students</span><span class="stat-icon purple">♙</span></div>
-            <div class="stat-value" id="total-students">—</div>
-            <div class="stat-foot"><span class="tiny-dot purple-dot"></span> Total registered profiles</div>
-          </article>
-          <article class="stat-card">
-            <div class="stat-top"><span class="stat-label">Present today</span><span class="stat-icon green">✓</span></div>
-            <div class="stat-value" id="present-today">—</div>
-            <div class="stat-foot"><span class="tiny-dot green-dot"></span> Unique students checked in</div>
-          </article>
-          <article class="stat-card">
-            <div class="stat-top"><span class="stat-label">Absent today</span><span class="stat-icon orange">⌁</span></div>
-            <div class="stat-value" id="absent-today">—</div>
-            <div class="stat-foot"><span class="tiny-dot orange-dot"></span> Based on registered students</div>
-          </article>
-          <article class="stat-card">
-            <div class="stat-top"><span class="stat-label">Attendance rate</span><span class="stat-icon blue">％</span></div>
-            <div class="stat-value" id="attendance-rate">—<span class="value-unit">%</span></div>
-            <div class="stat-foot"><span class="tiny-dot blue-dot"></span> Present ÷ registered students</div>
-          </article>
-        </div>
-
-        <div class="content-grid">
-          <section class="panel attendance-panel" id="attendance">
-            <div class="panel-heading">
-              <div><h2>Recent attendance</h2><p>Latest RFID check-ins recorded by the system</p></div>
-              <button class="button button-secondary" id="export-button">↓ Export CSV</button>
-            </div>
-            <div class="filters">
-              <label class="search-box"><span>⌕</span><input id="search-input" type="search" placeholder="Search name, ID or card UID"></label>
-              <label class="select-wrap"><span class="sr-only">Date filter</span><input id="date-filter" type="date" aria-label="Filter by date"></label>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>STUDENT</th><th>CARD UID</th><th>DATE &amp; TIME</th><th>STATUS</th></tr></thead>
-                <tbody id="attendance-body"></tbody>
-              </table>
-              <div class="empty-state" id="attendance-empty" hidden>No attendance records match your filters.</div>
-            </div>
-            <div class="table-footer"><span id="record-count">0 records</span><span>Latest records first</span></div>
-          </section>
-
-          <section class="panel device-panel">
-            <div class="panel-heading"><div><h2>Device status</h2><p>Attendance hardware connection</p></div><span class="status-ring">⌁</span></div>
-            <div class="device-visual">
-              <div class="chip-art"><span>ESP32</span><i></i><i></i><i></i><i></i><b>RFID</b></div>
-              <div class="signal signal-one"></div><div class="signal signal-two"></div>
-            </div>
-            <div class="device-details">
-              <div><span>Device</span><strong>ESP32 + RC522</strong></div>
-              <div><span>Cloud API</span><strong id="api-status"><i class="status-dot muted"></i> Not connected</strong></div>
-              <div><span>Last refresh</span><strong id="last-refresh">—</strong></div>
-              <div><span>Data source</span><strong id="data-source">Sample preview</strong></div>
-            </div>
-            <div class="device-note"><span>ⓘ</span><p>The dashboard can show live records after the API endpoint is deployed and connected to your database.</p></div>
-          </section>
-        </div>
-
-        <section class="panel students-panel" id="students">
-          <div class="panel-heading">
-            <div><h2>Registered students</h2><p>Students recognized by the attendance system</p></div>
-            <span class="count-badge" id="student-count-badge">0 students</span>
-          </div>
-          <div class="students-grid" id="students-grid"></div>
-        </section>
-        <footer class="footer"><span>© <span id="year"></span> AttendX</span><span>Built for ESP32 · RC522 RFID attendance</span></footer>
-      </section>
-    </main>
+    </div>
+    <div class="sidebar-foot">
+      AttendX <span>v1.1</span><br>
+      <small>RFID attendance platform</small>
+    </div>
   </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <button class="menu-button" id="menu-button" aria-label="Toggle menu">☰</button>
+    <div class="breadcrumb">Workspace <span>/</span> <strong>Overview</strong></div>
+    <div class="top-actions">
+      <span class="live-pill"><i></i> SYSTEM OVERVIEW</span>
+      <div class="avatar">A</div>
+    </div>
+  </header>
+
+  <section class="page-content" id="overview">
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">ATTENDANCE MANAGEMENT</p>
+        <h1>Good day, <span>Admin.</span></h1>
+        <p class="subtitle">Monitor attendance and review student records.</p>
+      </div>
+      <div class="heading-actions">
+        <div class="date-chip">
+          <span>▦</span>
+          <span id="today-label">Today</span>
+        </div>
+        <button class="button button-primary" id="refresh-button">
+          <span>↻</span> Refresh data
+        </button>
+      </div>
+    </div>
+
+    <div class="notice" id="demo-notice" hidden>
+      <span class="notice-icon">i</span>
+      <div>
+        <strong>Data unavailable</strong>
+        <p>Firebase could not be loaded. Check your connection and Firestore rules.</p>
+      </div>
+      <button id="dismiss-notice" aria-label="Dismiss notice">×</button>
+    </div>
+
+    <div class="stats-grid">
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Registered students</span>
+          <span class="stat-icon purple">♙</span>
+        </div>
+        <div class="stat-value" id="total-students">—</div>
+        <div class="stat-foot">Total registered profiles</div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Present today</span>
+          <span class="stat-icon green">✓</span>
+        </div>
+        <div class="stat-value" id="present-today">—</div>
+        <div class="stat-foot">Unique students present</div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Absent today</span>
+          <span class="stat-icon orange">⌁</span>
+        </div>
+        <div class="stat-value" id="absent-today">—</div>
+        <div class="stat-foot">Estimated after 5 PM IST</div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Attendance rate</span>
+          <span class="stat-icon blue">％</span>
+        </div>
+        <div class="stat-value" id="attendance-rate">—</div>
+        <div class="stat-foot">Present ÷ registered students</div>
+      </article>
+    </div>
+
+    <div class="content-grid">
+      <section class="panel attendance-panel" id="attendance">
+        <div class="panel-heading">
+          <div>
+            <h2>Recent attendance</h2>
+            <p>Latest RFID check-ins recorded by the system</p>
+          </div>
+          <button class="button button-secondary" id="export-button">↓ Export CSV</button>
+        </div>
+
+        <div class="filters">
+          <label class="search-box">
+            <span>⌕</span>
+            <input id="search-input" type="search" placeholder="Search name, ID or card UID">
+          </label>
+          <label class="select-wrap">
+            <span class="sr-only">Date filter</span>
+            <input id="date-filter" type="date" aria-label="Filter by date">
+          </label>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>STUDENT</th>
+                <th>CARD UID</th>
+                <th>DATE &amp; TIME</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody id="attendance-body"></tbody>
+          </table>
+          <div class="empty-state" id="attendance-empty" hidden>
+            No attendance records match your filters.
+          </div>
+        </div>
+
+        <div class="table-footer">
+          <span id="record-count">0 records</span>
+          <span>Latest records first</span>
+        </div>
+      </section>
+
+      <section class="panel device-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Device status</h2>
+            <p>Attendance hardware connection</p>
+          </div>
+          <span class="status-ring">⌁</span>
+        </div>
+
+        <div class="device-visual">
+          <div class="chip-art">
+            <span>ESP32</span><i></i><i></i><i></i><i></i><b>RFID</b>
+          </div>
+          <div class="signal signal-one"></div>
+          <div class="signal signal-two"></div>
+        </div>
+
+        <div class="device-details">
+          <div><span>Device</span><strong>ESP32 + RC522</strong></div>
+          <div>
+            <span>Cloud</span>
+            <strong id="api-status"><i class="status-dot muted"></i> Checking</strong>
+          </div>
+          <div><span>Last refresh</span><strong id="last-refresh">—</strong></div>
+          <div><span>Data source</span><strong id="data-source">Firebase Firestore</strong></div>
+        </div>
+
+        <div class="device-note">
+          <span>ⓘ</span>
+          <p>Records appear here after they have been uploaded to Firestore.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel students-panel" id="students">
+      <div class="panel-heading">
+        <div>
+          <h2>Registered students</h2>
+          <p>Students recognized by the attendance system</p>
+        </div>
+        <span class="count-badge" id="student-count-badge">0 students</span>
+      </div>
+      <div class="students-grid" id="students-grid"></div>
+    </section>
+
+    <section class="panel monthly-panel" id="monthly-reports">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">ATTENDANCE ANALYTICS</p>
+          <h2>Monthly attendance report</h2>
+          <p>Select a student and month to review daily attendance.</p>
+        </div>
+        <button class="button button-secondary" id="monthly-export-button">
+          ↓ Export monthly CSV
+        </button>
+      </div>
+
+      <div class="monthly-filters">
+        <label>
+          <span>Student</span>
+          <select id="monthly-student">
+            <option value="">Select student</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Month</span>
+          <select id="monthly-month"></select>
+        </label>
+
+        <label>
+          <span>Year</span>
+          <select id="monthly-year"></select>
+        </label>
+      </div>
+
+      <div class="monthly-summary">
+        <article>
+          <span>Working days</span>
+          <strong id="monthly-working">0</strong>
+        </article>
+        <article>
+          <span>Present</span>
+          <strong id="monthly-present">0</strong>
+        </article>
+        <article>
+          <span>Absent</span>
+          <strong id="monthly-absent">0</strong>
+        </article>
+        <article>
+          <span>Attendance rate</span>
+          <strong id="monthly-rate">—</strong>
+        </article>
+      </div>
+
+      <div class="report-note" id="monthly-note" role="status">
+        Select a student to view the report.
+      </div>
+
+      <div class="table-wrap monthly-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>DATE</th>
+              <th>DAY</th>
+              <th>FIRST CHECK-IN</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody id="monthly-body"></tbody>
+        </table>
+        <div class="empty-state" id="monthly-empty" hidden>
+          No days to display.
+        </div>
+      </div>
+
+      <div class="legend">
+        <span><i class="legend-present"></i> Present</span>
+        <span><i class="legend-absent"></i> Absent</span>
+        <span><i class="legend-pending"></i> Pending</span>
+        <span><i class="legend-holiday"></i> Weekend</span>
+        <span><i class="legend-upcoming"></i> Upcoming</span>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>© <span id="year"></span> AttendX</span>
+      <span>Built for ESP32 · RC522 RFID attendance</span>
+    </footer>
+  </section>
+</main>
+```
+
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
